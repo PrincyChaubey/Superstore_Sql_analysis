@@ -26,26 +26,24 @@ select count(*) from superstore;
 
 
 --Sales Analysis 
---Que1 What is the total sales amount?
+--1 What is the total sales amount?
 select sum(sales) as total_sales from superstore;
 
---Que2 What are monthly sales trends?
+--2 What are monthly sales trends?
 select to_char(orderdate,'yyyy-mm') as year_month,
 	   sum (sales) as monthly_sales 
 from superstore 
 group by year_month
 order by year_month;
 
---Que3 Which year had the highest sales?
+--3 Which year had the highest sales?
 select extract(year from orderdate) as year ,
        sum(sales) as total_sales 
 from superstore
 group by year
 order by total_sales desc limit 1;
 
-
-
---What are the top 10 days with highest sales?
+--4 What are the top 10 days with highest sales?
 select orderdate ,
        sum(sales) as total_sales 
 from superstore 
@@ -53,7 +51,7 @@ group by orderdate
 order by total_sales desc 
 limit 10;
 
---Which region generates the most sales?
+--5 Which region generates the most sales?
 select region,
        sum(sales) as highest_sales 
 from superstore 
@@ -61,7 +59,7 @@ group by region
 order by highest_sales desc 
 limit 1;
 
---Which city has the highest total sales?
+--6 Which city has the highest total sales?
 select city,
       sum(sales) as highest_sales 
 from superstore 
@@ -69,7 +67,7 @@ group by city
 order by highest_sales desc 
 limit 1;
 
---Which state contributes the most revenue?
+--7 Which state contributes the most revenue?
 select state,
       sum(sales) as highest_revenue 
 from superstore 
@@ -77,7 +75,7 @@ group by state
 order by highest_revenue desc 
 limit 1;
 
---What is average sales per order?
+--8 What is average sales per order?
 
 select
        avg(total_sales) as avg_sales  
@@ -88,7 +86,7 @@ from (
 	 group by orderid
   )t;
 
---Which segment generates the highest sales?
+--9 Which segment generates the highest sales?
 select segment,
       sum(sales) as highest_revenue 
 from superstore 
@@ -97,7 +95,7 @@ order by highest_revenue desc
 limit 1;
 
 
---What is daily/weekly sales trend?
+--10 What is daily/weekly sales trend?
 SELECT 
     EXTRACT(YEAR FROM orderdate) AS year,
     EXTRACT(WEEK FROM orderdate) AS week,
@@ -106,8 +104,8 @@ FROM superstore
 GROUP BY 1, 2
 ORDER BY year, week;
 
---👥 2. Customer Analysis 
---Who are the top 10 customers by sales?
+--👥  Customer Analysis 
+--1 Who are the top 10 customers by sales?
 select customerid,
        customername,
        sum(sales) as total_sales 
@@ -116,7 +114,7 @@ group by customerid,customername
 order by total_sales desc 
 limit 10;
 
---Which customer placed the most orders?
+--2 Which customer placed the most orders?
 
 select customerid,
        customername,
@@ -126,7 +124,7 @@ group by customerid,customername
 order by total_quantity desc 
 limit 1;
 
---Which segment has the most customers?
+--3 Which segment has the most customers?
 
 with  t as (
 select segment ,
@@ -145,7 +143,7 @@ order by total_customer desc
 limit 1;
 
 
---What is average spending per customer?
+--4 What is average spending per customer?
 
 SELECT 
     AVG(total_spent) AS avg_spending_per_customer
@@ -157,28 +155,28 @@ FROM (
     GROUP BY customerid
 ) t;
 
---Which city has the highest number of customers?
+--5 Which city has the highest number of customers?
 select city,
        count(customerid) as total_customer 
 from superstore 
 group by city
 order by total_customer desc limit 1;
 
---Who are repeat customers?
+--6 Who are repeat customers?
 select customerid,
        count( distinct orderid) as total_order 
 from superstore 
 group by customerid 
 having count(orderid)>1;
 
---What is customer distribution by region?
+--7 What is customer distribution by region?
 select region,
        count(customerid) as total_customer 
 from superstore 
 group by region
 order by total_customer desc ;
 
---Which customers are most profitable?
+--8 Which customers are most profitable?
 select customerid,
        customername ,
 	   sum(profit) as total_profit 
@@ -187,11 +185,11 @@ group by customerid,customername
 order by total_profit desc;
 
 
---How many unique customers are there?
+--9 How many unique customers are there?
 select count(distinct customerid) as unique_customer 
 from superstore;
 
---Which segment gives highest revenue per customer?
+--10 Which segment gives highest revenue per customer?
 SELECT 
     segment,
     AVG(customer_revenue) AS avg_revenue_per_customer
@@ -206,9 +204,11 @@ FROM (
 GROUP BY segment
 ORDER BY avg_revenue_per_customer DESC;
 
--- Product Analysis (10 Questions)
 
---Which product has highest sales?
+
+-- Product Analysis 
+
+--1Which product has highest sales?
 select productid,
        productname ,
 	   sum(sales) as total_sales 
@@ -231,7 +231,7 @@ limit 1;
 where dn=1;
 
 
---Which product has highest profit?
+--2 Which product has highest profit?
 select * 
  from (
      select productid,
@@ -245,7 +245,7 @@ select *
           group by productid,productname)t)x
 where dn=1;
 
---Which product has highest quantity sold?
+--3Which product has highest quantity sold?
 
 select * from (
            select productid,
@@ -265,7 +265,7 @@ select * from (
 				)t
 	);
 
---Which sub-category sells most?
+--4Which sub-category sells most?
 select * from (select subcategory ,
        total_quantity,
 	   dense_rank() over(order by total_quantity desc) as dn 
@@ -278,7 +278,7 @@ from (
 where dn=1;
 
 
---Which category performs best overall
+--5 Which category performs best overall
 
 select category,
        sum(sales)as total_sales ,
@@ -287,7 +287,7 @@ from superstore
 group by category 
 order by total_profit desc;
 
---Which products have negative profit?
+--6 Which products have negative profit?
 select productid,
        productname,
 	   sum(profit) as product_profit 
@@ -296,7 +296,7 @@ group by productid,productname
 having sum(profit) <0
 order by product_profit desc;
 
---Which products are most frequently ordered?
+--7 Which products are most frequently ordered?
 select productid,
        productname ,
 	   count( distinct orderid) as total_order 
@@ -305,7 +305,7 @@ group by productid,productname
 order by total_order desc 
 limit 1;
 
---What are top 10 best-selling products?
+--8 What are top 10 best-selling products?
 select productid,
        productname ,
 	   sum(quantity) as total_order 
@@ -315,7 +315,7 @@ order by total_order desc
 limit 10;
 
 
---Which products are least sold?
+--9 Which products are least sold?
 select productid,
        productname ,
 	   sum(quantity) as total_order 
@@ -324,7 +324,7 @@ group by productid,productname
 order by total_order asc 
 limit 1;
 
---Which category has highest average discount?
+--10 Which category has highest average discount?
 select category,
        avg(discount) as avg_discount 
 from superstore 
@@ -332,19 +332,17 @@ group by category
 order by avg_discount desc 
 limit 1; 
 
-select * from superstore limit 5;
 
-🚚 4. Shipping & Delivery Analysis (5 Questions)
+--🚚 Shipping & Delivery Analysis 
 
---Which ship mode is most used?
-
+--1 Which ship mode is most used
 select shipmode,
        count(orderid) as shipmode_used 
 	   from superstore 
 group by shipmode
 order by shipmode_used desc limit 1;
 
---Which ship mode generates highest profit?
+--2Which ship mode generates highest profit?
 select shipmode,
        sum(profit) as total_profit 
 	   from superstore 
@@ -352,7 +350,7 @@ group by shipmode
 order by total_profit desc 
 limit 1;
 
---What is average shipping time?
+--3What is average shipping time?
 
 SELECT 
     AVG(shipping_time) AS avg_shipping_time_days
@@ -364,7 +362,7 @@ FROM (
     GROUP BY orderid, shipdate, orderdate
 ) t;
 
---Which region uses fastest shipping mode most?
+--4 Which region uses fastest shipping mode most?
 select
     Region,
     count(*) as total_same_day_orders
@@ -373,15 +371,14 @@ where ShipMode = 'Same Day'
 group by Region
 order by  total_same_day_orders desc;
 
---Does shipping mode affect profit?
+--5 Does shipping mode affect profit?
 select shipmode,
        sum(profit) as total_profit 
 from superstore 
 group by shipmode;
 
--- 5. Region & Geography Analysis 
-
---Which region generates highest sales?
+--  Region & Geography Analysis 
+--1 Which region generates highest sales?
 
 with sales as (select region ,
       sum(sales) as total_sales 
@@ -389,7 +386,7 @@ from superstore
 group by region)
 select * from sales where total_sales=(select max(total_sales) from sales);
 
---Which region has highest profit?
+--2 Which region has highest profit?
 
 with region_profit as (select region ,
       sum(profit) as total_profit 
@@ -397,7 +394,7 @@ from superstore
 group by region)
 select * from region_profit where total_profit=(select max(total_profit) from region_profit);
 
---Which state is most profitable?
+--3 Which state is most profitable?
 
 select state ,total_profit 
 from (
@@ -416,7 +413,7 @@ where total_profit=(
 		 )t
 );
 
---Which city has highest loss?
+--4 Which city has highest loss?
 select city,
       sum(profit) as total_loss 
 from superstore 
@@ -424,7 +421,7 @@ group by city
 order by total_loss asc 
 limit 1
 
---Which region has highest discount usage?
+--5 Which region has highest discount usage?
 select region,
        avg(discount) as avg_discount 
 from superstore 
@@ -432,14 +429,13 @@ group by region
 order by avg_discount desc 
 limit 1;
 
--- 6. Profit & Discount Analysis (5 Questions)
-
---What is total profit?
+-- 6. Profit & Discount Analysis
+--1What is total profit?
 
 select sum(profit) as total_profit 
 from superstore;
 
---Which category gives highest profit margin?
+--2 Which category gives highest profit margin?
 with profit_margins as (select category,
        sum(profit)as total_profit,
 	   sum(sales) as total_sales,
@@ -451,7 +447,7 @@ select *
 from profit_margins 
 where profit_margin=(select max(profit_margin) from profit_margins);
 
---Which orders have negative profit?
+--3 Which orders have negative profit?
 
 select orderid,
        sum(profit) as total_profit
@@ -460,7 +456,7 @@ group by orderid
 having sum(profit) <0
 order by total_profit asc;
 
---Does higher discount reduce profit?
+--4 Does higher discount reduce profit?
 select 
      case
 	    when discount =0 then 'no discount' 
@@ -476,19 +472,16 @@ order by avg_profit ;
 
 
 
---What is average discount per category?
+--5 What is average discount per category?
 select category,
        round(avg(discount)::numeric,2) as avg_discount 
 from superstore 
 group by category;
 
---📊 7. Advanced Business Insights (5 Questions)
+--📊  Advanced Business Insights 
 
 
---What is sales vs profit correlation?
-
-
---Which products drive 80% of revenue (Pareto analysis)?
+--1 Which products drive 80% of revenue (Pareto analysis)?
 with product_sales as (
          select productid,
 	            productname,
@@ -512,7 +505,7 @@ from ranked
 where (running_revenue*100/total_revenue)<=80;
 
 
---Which customers give high sales but low profit?
+--2 Which customers give high sales but low profit?
 with customer_data as (
        select customerid,
        customername ,
@@ -531,7 +524,7 @@ AND total_profit < (
 )
 ORDER BY total_sales DESC;
 
---Which combinations of category + region are most profitable?
+--3 Which combinations of category + region are most profitable?
 select category,
        region,
 	   sum(profit) as total_profit 
@@ -540,7 +533,7 @@ group by category,region
 order by total_profit desc 
 limit 1 ;
 
---What are overall business growth trends over time?
+--4 What are overall business growth trends over time?
 
 with sales_growth as (
            select year_month,
