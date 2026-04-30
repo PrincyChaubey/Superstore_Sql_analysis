@@ -3,7 +3,7 @@ SQL and Excel analysis of Superstore sales and profit trends.
 
 ## Tools Used
 - PostgreSql(Data analysis ,Sql Queries)
-- MS Excel (Pivot Charts,Dashboard).
+- MS Excel (cleaning,Pivot Charts,Dashboard).
 
 ## Key Question?
 - What is the relationship between sales and profit?
