@@ -39,6 +39,7 @@ SQL and Excel analysis of Superstore sales and profit trends.
 
 
 ## Sample queries
+  
 -- What are overall business growth trends over time?
 ```
 with sales_growth as (
@@ -58,4 +59,30 @@ select year_month,
 	   prev_month_sales,
 	   (monthly_sales-prev_month_sales)*100/prev_month_sales as monthly_sales_growth
 from sales_growth;
+```
+
+
+--Which products drive 80% of revenue (Pareto analysis)?
+```
+with product_sales as (
+         select productid,
+	            productname,
+			    sum(sales) as product_revenue
+	    from superstore 
+		group by productid,productname
+),	
+ranked as (
+select productid,
+       productname,
+	   product_revenue,
+	   sum(product_revenue) over(order by product_revenue desc) as running_revenue,
+	   sum(product_revenue) over() as total_revenue
+from product_sales)
+select productid,
+       productname,
+	   product_revenue,
+	   running_revenue,
+	   (running_revenue*100/total_revenue) as cummulative_pct
+from ranked
+where (running_revenue*100/total_revenue)<=80;
 ```
