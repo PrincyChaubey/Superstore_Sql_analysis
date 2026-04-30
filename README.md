@@ -36,3 +36,26 @@ SQL and Excel analysis of Superstore sales and profit trends.
 1. Run SQL queries in PostgreSQL
 2. Export results to CSV
 3. Open Excel dashboard to explore insights
+
+
+## Sample queries
+-- What are overall business growth trends over time?
+```
+with sales_growth as (
+           select year_month,
+                 monthly_sales,
+	             lag(monthly_sales) over(order by year_month ) as prev_month_sales
+	       from(
+	             select to_char( orderdate,'yyyy-mm') as year_month,
+                        sum(quantity) as total_quantity,
+                        sum(sales) as monthly_sales,
+	                    sum(profit) as monthly_Profit 
+                 from superstore
+                 group by year_month
+                 order by  year_month)t)
+select year_month,
+       monthly_sales,
+	   prev_month_sales,
+	   (monthly_sales-prev_month_sales)*100/prev_month_sales as monthly_sales_growth
+from sales_growth;
+```
